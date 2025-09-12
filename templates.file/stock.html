@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stock Info</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <h1>Stock Information</h1>
+
+  <form method="POST" action="/stock">
+    <label for="symbol">Stock Symbol:</label>
+    <input type="text" id="symbol" name="symbol" placeholder="e.g. AAPL" required>
+    <button type="submit">Get Info</button>
+  </form>
+
+  {% if current_price %}
+    <h2>Results for {{ symbol }}</h2>
+    <p>Current Price: ${{ current_price }}</p>
+    <p>Predicted Next Day Price: ${{ predicted_price }}</p>
+    <p>Status: {% if predicted_price > current_price %} 📈 Profit {% else %} 📉 Loss {% endif %}</p>
+  {% endif %}
+
+  <p><a href="{{ url_for('portfolio') }}">Back to Portfolio</a></p>
+</body>
+</html>

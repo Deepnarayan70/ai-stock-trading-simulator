@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Buy Stocks</h2>
+<p>Balance: ${{ balance }}</p>
+<div class="card p-3 mb-3">
+  <form method="POST" action="{{ url_for('buy') }}">
+    <div class="row g-2">
+      <div class="col-md-4">
+        <input class="form-control" name="symbol" placeholder="Ticker (e.g. AAPL)" required>
+      </div>
+      <div class="col-md-4">
+        <input class="form-control" name="amount" type="number" step="0.01" placeholder="Amount in USD" required>
+      </div>
+      <div class="col-md-4">
+        <button class="btn btn-success w-100">Buy</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<p><a class="btn btn-outline-secondary" href="{{ url_for('portfolio') }}">Go to Portfolio</a></p>
+{% endblock %}

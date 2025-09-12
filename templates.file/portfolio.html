@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Portfolio</h2>
+<p>Balance: ${{ balance }}</p>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Symbol</th><th>Shares</th><th>Buy Cost</th><th>Live Price</th><th>Value</th><th>P/L</th><th>ROI</th><th>Chart</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for symbol, data in investments.items() %}
+    <tr>
+      <td>{{ symbol }}</td>
+      <td>{{ data.shares }}</td>
+      <td>${{ data.buy_cost }}</td>
+      <td>${{ data.live_price }}</td>
+      <td>${{ data.value }}</td>
+      <td>${{ data.pnl }}</td>
+      <td>{{ data.roi }}%</td>
+      <td>
+        {% if charts[symbol].chart %}
+          <a href="{{ url_for('charts', filename=symbol + '_chart.png') }}" target="_blank">View</a>
+          <div class="small">Next: {{ charts[symbol].predictions[0] if charts[symbol].predictions else '-' }}</div>
+        {% else %}
+          -
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="mt-3">
+  <strong>Total Cost:</strong> ${{ total_cost }} |
+  <strong>Current Value:</strong> ${{ total_current }} |
+  <strong>Total P/L:</strong> ${{ total_pnl }}
+</div>
+
+<p class="mt-3">
+  <a class="btn btn-primary" href="{{ url_for('buy') }}">Buy More</a>
+  <a class="btn btn-warning" href="{{ url_for('sell') }}">Sell</a>
+  <a class="btn btn-outline-secondary" href="{{ url_for('transactions') }}">History</a>
+</p>
+{% endblock %}
