@@ -9,3 +9,6 @@ instance/
 venv/
 env/
 .vercel
+migrations/
+deploy_log.txt
+*.log

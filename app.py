@@ -30,8 +30,9 @@ elif db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
-# ✅ Make sure SQLAlchemy uses the public schema
-app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {"connect_args": {"options": "-c search_path=public"}}
+# ✅ Make sure SQLAlchemy uses the public schema (PostgreSQL only)
+if db_url.startswith("postgresql://"):
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {"connect_args": {"options": "-c search_path=public"}}
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -75,7 +76,14 @@ def make_prediction_and_chart(symbol):
         if data.empty:
             return None, None, None, None
 
+        # Handle multi-level columns from newer yfinance versions
+        if isinstance(data.columns, pd.MultiIndex):
+            data.columns = data.columns.get_level_values(0)
+
         close = data['Close'].dropna()
+        if len(close) < 2:
+            return None, None, None, None
+
         series = close[-60:] if len(close) >= 60 else close
         X = np.arange(len(series)).reshape(-1, 1)
         y = series.values.reshape(-1, 1)
@@ -248,12 +256,13 @@ def portfolio():
             'roi': round(roi, 2)
         }
         h_dates, h_vals, p_dates, p_vals = make_prediction_and_chart(sym)
-        charts_data[sym] = {
-            'hist_dates': h_dates,
-            'hist_values': h_vals,
-            'pred_dates': p_dates,
-            'pred_values': p_vals
-        }
+        if h_dates and h_vals and p_dates and p_vals:
+            charts_data[sym] = {
+                'hist_dates': h_dates,
+                'hist_values': h_vals,
+                'pred_dates': p_dates,
+                'pred_values': p_vals
+            }
         total_current += value
 
     return render_template('portfolio.html',
