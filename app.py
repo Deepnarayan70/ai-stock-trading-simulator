@@ -19,8 +19,14 @@ from flask_migrate import Migrate
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", "change_this_secret_in_production")
 
-db_url = os.environ.get("DATABASE_URL", "sqlite:///stock_simulator.db")
-if db_url.startswith("postgres://"):
+db_url = os.environ.get("DATABASE_URL")
+if not db_url:
+    # Use writeable tmp directory for SQLite when running on Vercel
+    if os.environ.get("VERCEL"):
+        db_url = "sqlite:////tmp/stock_simulator.db"
+    else:
+        db_url = "sqlite:///stock_simulator.db"
+elif db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
@@ -32,11 +38,19 @@ db.init_app(app)
 bcrypt = Bcrypt(app)
 migrate = Migrate(app, db)
 
+# Ensure database tables are created
+with app.app_context():
+    db.create_all()
+
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
 
-os.makedirs('static/charts', exist_ok=True)
+try:
+    os.makedirs('static/charts', exist_ok=True)
+except Exception:
+    pass
+
 
 @login_manager.user_loader
 def load_user(user_id):
