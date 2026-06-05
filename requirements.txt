@@ -1,0 +1,12 @@
+Flask
+Flask-Login
+Flask-Bcrypt
+Flask-SQLAlchemy
+Flask-Migrate
+yfinance
+numpy
+pandas
+matplotlib
+scikit-learn
+gunicorn
+psycopg2-binary

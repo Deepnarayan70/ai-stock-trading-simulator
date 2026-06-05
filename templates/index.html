@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row min-vh-75 align-items-center py-5">
+  <div class="col-lg-7 animate-fade-in">
+    <div class="badge bg-primary-subtle text-primary border border-primary px-3 py-2 mb-4">
+      🚀 v2.0 NOW LIVE - AI FORECASTING ENABLED
+    </div>
+    <h1 class="display-2 fw-900 mb-3" style="letter-spacing: -0.04em; line-height: 1;">
+      Dominate the <br>
+      <span class="hero-gradient">Digital Market</span>
+    </h1>
+    <p class="lead text-muted mb-5 fs-4 fw-500" style="max-width: 600px;">
+      Master the art of high-frequency trading with zero risk. 
+      Harness institutional-grade AI insights to outpace the crowd.
+    </p>
+    <div class="d-flex gap-3">
+      {% if not current_user.is_authenticated %}
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-5 py-3 shadow-lg">Begin Simulation</a>
+        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg px-5 py-3 glass">Operator Login</a>
+      {% else %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg px-5 py-3 shadow-lg text-uppercase fw-bold">Enter Terminal</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-lg-5 d-none d-lg-block animate-fade-in" style="animation-delay: 0.2s;">
+    <div class="glass p-5 text-center position-relative overflow-hidden border-primary border-opacity-25">
+      <div class="position-absolute top-0 end-0 p-3 opacity-25">
+        <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <path d="M12 2v20M2 12h20" />
+        </svg>
+      </div>
+      <div class="stats-label mb-3">GLOBAL NEURAL SENTIMENT</div>
+      <div class="display-1 fw-900 text-success mb-3" style="letter-spacing: -0.05em;">+8.9%</div>
+      <div class="progress bg-transparent mb-4 border border-white-10" style="height: 12px; border-radius: 6px;">
+        <div class="progress-bar bg-success shadow-success" style="width: 82%; border-radius: 6px;"></div>
+      </div>
+      <div class="d-flex justify-content-between small text-muted">
+        <span class="fw-bold">BULLISH</span>
+        <span class="text-white-50">82.4% VOLUME</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 py-5 mt-5">
+  <div class="col-md-4">
+    <div class="glass p-5 h-100 transition-all hover-translate-y">
+      <div class="fs-1 mb-4">🧬</div>
+      <h3 class="fw-bold mb-3">Live Feed</h3>
+      <p class="text-muted leading-relaxed">Direct integration with global exchange nodes. Execute trades on real-world volatility without the latency.</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="glass p-5 h-100 transition-all hover-translate-y">
+      <div class="fs-1 mb-4">🧠</div>
+      <h3 class="fw-bold mb-3">Predictive Engine</h3>
+      <p class="text-muted leading-relaxed">Advanced linear regression models analyze historical vectors to forecast future price trajectories.</p>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="glass p-5 h-100 transition-all hover-translate-y">
+      <div class="fs-1 mb-4">🏦</div>
+      <h3 class="fw-bold mb-3">Ironbound Security</h3>
+      <p class="text-muted leading-relaxed">Simulated $100k institutional credit line. Perfect your strategies in a fortress of financial safety.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

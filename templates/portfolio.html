@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Market Snapshot -->
+<div class="glass p-3 mb-4 d-flex justify-content-between align-items-center animate-fade-in" style="background: rgba(255,255,255,0.02);">
+  <div class="d-flex gap-4">
+    <div class="small">
+      <span class="text-muted fw-bold">MARKET STATUS:</span> 
+      <span class="badge bg-success-subtle text-success border border-success">OPEN</span>
+    </div>
+    <div class="small d-none d-md-block">
+      <span class="text-muted fw-bold">VOLATILITY:</span> 
+      <span class="text-warning fw-bold">LOW</span>
+    </div>
+    <div class="small d-none d-md-block">
+      <span class="text-muted fw-bold">AI CONFIDENCE:</span> 
+      <span class="text-info fw-bold">89%</span>
+    </div>
+  </div>
+  <div class="small text-muted">{{ now if now is defined else "" }}</div>
+</div>
+
+<div class="row g-4 animate-fade-in">
+  <!-- Portfolio Summary Stats -->
+  <div class="col-md-3">
+    <div class="stats-card glass">
+      <div class="stats-label text-muted">Total Invested</div>
+      <div class="stats-value">${{ "{:,.2f}".format(total_cost) }}</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stats-card glass">
+      <div class="stats-label text-muted">Current Value</div>
+      <div class="stats-value hero-gradient">{{ "{:,.2f}".format(total_current) }}</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stats-card glass">
+      <div class="stats-label text-muted">Total P&L</div>
+      <div class="stats-value {{ 'pnl-positive' if total_pnl >= 0 else 'pnl-negative' }}">
+        {{ '+' if total_pnl >= 0 else '' }}{{ "{:,.2f}".format(total_pnl) }}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stats-card glass">
+      <div class="stats-label text-muted">Buying Power</div>
+      <div class="stats-value text-success">${{ "{:,.2f}".format(balance) }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4 animate-fade-in" style="animation-delay: 0.1s;">
+  <div class="col-12">
+    <div class="glass p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0">Asset Intelligence</h3>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-sm px-4">Instant Buy</a>
+      </div>
+      
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Asset</th>
+              <th>Quantity</th>
+              <th>Entry Price</th>
+              <th>Market Price</th>
+              <th>Equity Value</th>
+              <th>Performance</th>
+              <th>Forecast</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for symbol, data in investments.items() %}
+            <tr>
+              <td>
+                <div class="fw-bold fs-5">{{ symbol }}</div>
+                <div class="small text-muted">Standard Equity</div>
+              </td>
+              <td class="font-monospace">{{ "{:,.4f}".format(data.shares) }}</td>
+              <td class="text-muted">${{ "{:,.2f}".format(data.buy_cost / data.shares) }}</td>
+              <td class="fw-bold text-info">${{ "{:,.2f}".format(data.live_price) }}</td>
+              <td class="fw-bold">${{ "{:,.2f}".format(data.value) }}</td>
+              <td class="{{ 'pnl-positive fw-bold' if data.pnl >= 0 else 'pnl-negative fw-bold' }}">
+                {{ '+' if data.pnl >= 0 else '' }}{{ "{:,.2f}".format(data.pnl) }} ({{ data.roi }}%)
+              </td>
+              <td>
+                <button class="btn btn-sm btn-outline-info border-0 glass px-3" type="button" data-bs-toggle="collapse" data-bs-target="#chart-{{ symbol }}">
+                  AI View
+                </button>
+              </td>
+              <td>
+                <form action="{{ url_for('sell') }}" method="POST" class="d-flex gap-2 align-items-center" style="max-width: 160px;">
+                  <input type="hidden" name="symbol" value="{{ symbol }}">
+                  <input type="number" name="shares" class="form-control form-control-sm border-secondary text-center" placeholder="Qty" step="any" required>
+                  <button class="btn btn-sm btn-danger px-3">Exit</button>
+                </form>
+              </td>
+            </tr>
+            <tr class="collapse" id="chart-{{ symbol }}">
+              <td colspan="8" class="p-0 border-0">
+                <div class="p-4 mt-3 mb-4" style="background: rgba(0,0,0,0.4); border-radius: 20px; border: 1px solid var(--glass-border);">
+                  <div class="small text-muted mb-3 fw-bold">7-DAY LINEAR REGRESSIVE TRENDLINE</div>
+                  <div id="apex-chart-{{ symbol }}"></div>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+            {% if not investments %}
+            <tr>
+              <td colspan="8" class="text-center py-5 text-muted">
+                No active positions found. Explore the market to start trading.
+              </td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  {% for symbol, cdata in charts.items() %}
+  (function() {
+    const options = {
+      series: [
+        {
+          name: 'Market Historical',
+          data: {{ cdata.hist_values | tojson }}
+        },
+        {
+          name: 'AI Forecasted',
+          data: [
+            ...new Array(({{ cdata.hist_values | length }} - 1)).fill(null),
+            {{ cdata.hist_values[-1] if cdata.hist_values else 'null' }},
+            ...{{ cdata.pred_values | tojson }}
+          ]
+        }
+      ],
+      chart: {
+        height: 320,
+        type: 'line',
+        background: 'transparent',
+        toolbar: { show: false },
+        animations: { enabled: true, easing: 'easeinout', speed: 1200 }
+      },
+      colors: ['#6366f1', '#10b981'],
+      stroke: { curve: 'smooth', width: [4, 4], dashArray: [0, 8] },
+      theme: { mode: 'dark' },
+      grid: { 
+        borderColor: 'rgba(255,255,255,0.05)',
+        strokeDashArray: 4
+      },
+      xaxis: {
+        categories: [...{{ cdata.hist_dates | tojson }}, ...{{ cdata.pred_dates | tojson }}],
+        labels: { style: { colors: '#94a3b8', fontSize: '11px' } },
+        axisBorder: { show: false },
+        axisTicks: { show: false }
+      },
+      yaxis: { 
+        labels: { 
+          style: { colors: '#94a3b8', fontSize: '11px' },
+          formatter: (val) => '$' + val.toFixed(2)
+        } 
+      },
+      tooltip: { 
+        theme: 'dark',
+        x: { show: true },
+        y: { formatter: (val) => '$' + val.toFixed(2) }
+      },
+      markers: {
+        size: [0, 5],
+        strokeWidth: 0,
+        hover: { size: 7 }
+      }
+    };
+    const chart = new ApexCharts(document.querySelector("#apex-chart-{{ symbol }}"), options);
+    chart.render();
+  })();
+  {% endfor %}
+});
+</script>
+{% endblock %}
+
+

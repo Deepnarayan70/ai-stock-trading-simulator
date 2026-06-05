@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-4 animate-fade-in">
+  <div class="col-lg-8">
+    <div class="glass p-5 h-100">
+      <div class="d-flex align-items-center gap-3 mb-5">
+        <div class="p-3 bg-primary rounded-circle" style="--bs-bg-opacity: .1;">
+          ⚡
+        </div>
+        <h3 class="fw-bold mb-0">High-Velocity Execution</h3>
+      </div>
+      
+      <form method="POST" action="{{ url_for('buy') }}">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <label class="stats-label">Asset Identifier (Ticker)</label>
+            <input class="form-control form-control-lg" name="symbol" placeholder="e.g. BTC-USD, TSLA" required>
+            <div class="small text-muted mt-2 opacity-50">Global markets enabled via RealTime link.</div>
+          </div>
+          <div class="col-md-6">
+            <label class="stats-label">Capital Allocation (USD)</label>
+            <div class="input-group input-group-lg">
+              <span class="input-group-text glass border-0 text-muted">$</span>
+              <input class="form-control" name="amount" type="number" step="0.01" placeholder="0.00" required>
+            </div>
+          </div>
+          <div class="col-12 mt-5">
+            <button class="btn btn-primary w-100 py-4 fw-800 fs-5">CONFIRM MARKET ORDER</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <div class="col-lg-4">
+    <div class="glass p-5 h-100 d-flex flex-column">
+      <h3 class="fw-bold mb-4">Capital Pool</h3>
+      <div class="text-center py-5 my-auto">
+        <div class="stats-label mb-2 opacity-50">Settled Buying Power</div>
+        <div class="display-4 fw-900 text-success">${{ "{:,.2f}".format(balance) }}</div>
+      </div>
+      <div class="mt-auto pt-4 border-top border-secondary" style="border-color: rgba(255,255,255,0.05) !important;">
+        <div class="d-grid gap-2">
+          <a href="{{ url_for('portfolio') }}" class="btn btn-outline-primary py-3 fw-bold">Review My Portfolio</a>
+          <a href="{{ url_for('transactions') }}" class="btn btn-link text-muted text-decoration-none small">View Execution Logs</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Live Heatmap Section (Placeholder for visual interest) -->
+<div class="row mt-5 animate-fade-in" style="animation-delay: 0.2s;">
+  <div class="col-12">
+    <div class="glass p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="fw-bold mb-0 text-muted">MARKET HEATMAP (SIMULATED)</h5>
+        <div class="d-flex gap-2">
+          <div class="p-1 rounded bg-success" style="width: 20px; height: 10px; opacity: 0.8;"></div>
+          <div class="p-1 rounded bg-success" style="width: 20px; height: 10px; opacity: 0.4;"></div>
+          <div class="p-1 rounded bg-danger" style="width: 20px; height: 10px; opacity: 0.4;"></div>
+          <div class="p-1 rounded bg-danger" style="width: 20px; height: 10px; opacity: 0.8;"></div>
+        </div>
+      </div>
+      <div class="row g-2">
+        {% for ticker in ['AAPL', 'TSLA', 'NVDA', 'BTC', 'ETH', 'AMZN'] %}
+        <div class="col-4 col-md-2">
+          <div class="p-3 text-center rounded border border-white-50" style="background: rgba(255,255,255,0.02);">
+            <div class="fw-bold small">{{ ticker }}</div>
+            <div class="{{ 'text-success' if loop.index % 2 == 0 else 'text-danger' }} x-small fw-bold">
+              {{ '+' if loop.index % 2 == 0 else '-' }}{{ (loop.index * 1.5) | round(1) }}%
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
