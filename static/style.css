@@ -23,7 +23,6 @@ body {
   overflow-x: hidden;
 }
 
-/* ===== Cards / Glass ===== */
 .glass {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -54,7 +53,6 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
-/* ===== Buttons ===== */
 .btn-primary {
   background: linear-gradient(135deg, var(--primary), #4f46e5);
   border: none;
@@ -68,7 +66,6 @@ body {
   transform: translateY(-1px);
 }
 
-/* ===== Stats Cards ===== */
 .stats-card {
   padding: 1.5rem;
   border-radius: var(--radius);
@@ -82,7 +79,6 @@ body {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* ===== Tables ===== */
 .table {
   color: var(--text-main) !important;
   background: transparent !important;
@@ -129,7 +125,6 @@ body {
 .table td:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
 .table td:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
 
-/* ===== Forms ===== */
 .form-control {
   background: rgba(255, 255, 255, 0.06) !important;
   border: 1px solid var(--border-color) !important;
@@ -150,7 +145,6 @@ body {
   opacity: 0.6;
 }
 
-/* ===== Scrollbar ===== */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-dark); }
 ::-webkit-scrollbar-thumb {
@@ -159,7 +153,6 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-/* ===== Typography ===== */
 .hero-gradient {
   background: linear-gradient(135deg, #a5b4fc, #6ee7b7);
   -webkit-background-clip: text;
@@ -185,7 +178,6 @@ body {
 .pnl-positive { color: var(--success); }
 .pnl-negative { color: var(--danger); }
 
-/* ===== Nav Links ===== */
 .nav-link {
   color: var(--text-muted) !important;
   font-weight: 600;
@@ -195,7 +187,6 @@ body {
 
 .nav-link:hover { color: var(--text-main) !important; }
 
-/* ===== Bootstrap Overrides ===== */
 .text-muted {
   color: var(--text-muted) !important;
 }
@@ -213,7 +204,6 @@ body {
   background: var(--bg-card) !important;
 }
 
-/* ===== Alert Fix ===== */
 .alert.glass {
   background: var(--bg-card) !important;
   color: var(--text-main) !important;
@@ -225,7 +215,6 @@ body {
 .alert-warning { border-left: 4px solid var(--warning) !important; }
 .alert-info { border-left: 4px solid #38bdf8 !important; }
 
-/* ===== Animation ===== */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(15px); }
   to { opacity: 1; transform: translateY(0); }

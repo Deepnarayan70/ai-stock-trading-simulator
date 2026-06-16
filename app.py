@@ -15,13 +15,11 @@ from sklearn.linear_model import LinearRegression
 from models import db, User, Investment, Transaction
 from flask_migrate import Migrate
 
-# ---------------- App Setup ----------------
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", "change_this_secret_in_production")
 
 db_url = os.environ.get("DATABASE_URL")
 if not db_url:
-    # Use writeable tmp directory for SQLite when running on Vercel
     if os.environ.get("VERCEL"):
         db_url = "sqlite:////tmp/stock_simulator.db"
     else:
@@ -30,7 +28,6 @@ elif db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
-# ✅ Make sure SQLAlchemy uses the public schema (PostgreSQL only)
 if db_url.startswith("postgresql://"):
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {"connect_args": {"options": "-c search_path=public"}}
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -39,7 +36,6 @@ db.init_app(app)
 bcrypt = Bcrypt(app)
 migrate = Migrate(app, db)
 
-# Ensure database tables are created
 with app.app_context():
     db.create_all()
 
@@ -57,7 +53,6 @@ except Exception:
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# ---------------- Helpers ----------------
 def fetch_current_price(symbol):
     """Return latest close price, or None if invalid ticker."""
     try:
@@ -76,7 +71,6 @@ def make_prediction_and_chart(symbol):
         if data.empty:
             return None, None, None, None
 
-        # Handle multi-level columns from newer yfinance versions
         if isinstance(data.columns, pd.MultiIndex):
             data.columns = data.columns.get_level_values(0)
 
@@ -106,7 +100,6 @@ def make_prediction_and_chart(symbol):
         print("Prediction error:", e)
         return None, None, None, None
 
-# ---------------- Routes ----------------
 @app.route('/')
 def index():
     return render_template('index.html')
